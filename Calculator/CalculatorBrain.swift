@@ -10,7 +10,7 @@ import Foundation
 
 class CalculatorBrain {
     //swift can associate data with any enum
-    // enum can implement protocols 
+    // enum can implement protocols
     private enum Op: Printable
     {
         case Operand(Double)
@@ -38,8 +38,13 @@ class CalculatorBrain {
     private var knownOps = [String:Op]()
     
     init() {
+        
+        func learnOp(op: Op) {
+            knownOps[op.description] = op
+        }
 //        knownOps["×"] = Op.BinaryOperation("×") { $0*$1 }
-        knownOps["×"] = Op.BinaryOperation("×", *)
+        learnOp(Op.BinaryOperation("×", *))
+//        knownOps["×"] = Op.BinaryOperation("×", *)
         knownOps["÷"] = Op.BinaryOperation("÷") { $1/$0 }
 //        knownOps["+"] = Op.BinaryOperation("+") { $0+$1 }
         knownOps["+"] = Op.BinaryOperation("+", +)
