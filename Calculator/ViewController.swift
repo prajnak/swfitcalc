@@ -18,6 +18,8 @@ class ViewController: UIViewController {
     // Implicitly unwrapped Optional uses "!"
     @IBOutlet weak var display: UILabel!
     var userIsInTheMiddleOfTypingText: Bool = false
+    var brain = CalculatorBrain()
+    
     //if this method had a return type, it would look like
     // func appendDigit(sender: UIButton) -> Double {
     @IBAction func appendDigit(sender: UIButton) {
@@ -42,48 +44,28 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         if userIsInTheMiddleOfTypingText {
             enterPressed()
         }
         // the following switch case statement passes a function as 
         // an argument to another function. since swift has strong type
         // inference, the argument types don't need to be spcified for op1 and op2.
-        switch operation {
-        case "×": performOperation { $0 * $1 }
-        case "÷": performOperation { $1 / $0 }
-        case "+": performOperation { $0 + $1 }
-        case "-": performOperation { $1 - $0 }
-        case "√": performOperations { sqrt($0) }
-        default: break
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation) {
+                displayValue = result
+            } else {
+                displayValue = 0
+            }
         }
     }
     
-    /* If a function has a function as an argument, the arguments can be passed in
-       as $0, $1, etc. if the function argument is the last argument, it can be moved outside
-        the () parentheses when being called.
-    */
-    func performOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enterPressed()
-        }
-    }
-    func performOperations(operation: Double -> Double) {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enterPressed()
-        }
-    }
-
-    //create an operandStack instance vairiable and initialize it
-    // can also be typed like var operandStack = Array<Double>()
-    // if it can be infereed, let it be inferred
-    var operandStack = Array<Double>()
     @IBAction func enterPressed() {
         userIsInTheMiddleOfTypingText = false
-        operandStack.append(displayValue)
-        println("operandStack = \(operandStack)")
+        if let result = brain.pushOperand(displayValue) {
+            displayValue = result
+        } else {
+            displayValue = 0
+        }
     }
     
     // Computed Properties - use curly brances isntead of an
