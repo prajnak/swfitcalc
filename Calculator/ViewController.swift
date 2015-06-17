@@ -48,19 +48,30 @@ class ViewController: UIViewController {
         }
         // the following switch case statement passes a function as 
         // an argument to another function. since swift has strong type
-        // inference, the targument types don't need to be spcified for op1 and op2.
+        // inference, the argument types don't need to be spcified for op1 and op2.
         switch operation {
-        case "×": performOperation({ (op1, op2) in return op1 * op2})
-        case "÷": performOperation({ (op1, op2) in return op1 / op2})
-        case "+": performOperation({ (op1, op2) in return op1 + op2})
-        case "-": performOperation({ (op1, op2) in return op1 - op2})
+        case "×": performOperation { $0 * $1 }
+        case "÷": performOperation { $1 / $0 }
+        case "+": performOperation { $0 + $1 }
+        case "-": performOperation { $1 - $0 }
+        case "√": performOperations { sqrt($0) }
         default: break
         }
     }
     
+    /* If a function has a function as an argument, the arguments can be passed in
+       as $0, $1, etc. if the function argument is the last argument, it can be moved outside
+        the () parentheses when being called.
+    */
     func performOperation(operation: (Double, Double) -> Double) {
         if operandStack.count >= 2 {
             displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
+            enterPressed()
+        }
+    }
+    func performOperations(operation: Double -> Double) {
+        if operandStack.count >= 1 {
+            displayValue = operation(operandStack.removeLast())
             enterPressed()
         }
     }
